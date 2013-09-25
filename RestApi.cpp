@@ -2,91 +2,86 @@
 #include "RestApi.h"
 #include "WebServer.h"
 
-RestApi::RestApi(WebServer &server)
-{
+RestApi::RestApi(WebServer &server) {
 	server.addCommand("get", &RestApi::get);
 	server.addCommand("put", &RestApi::put);
 }
 
-void RestApi::get(WebServer &server, WebServer::ConnectionType type, char *url_tail, bool tail_complete)
-{
-  URLPARAM_RESULT rc;
-  char name[32];
-  char value[32];
+void RestApi::get(WebServer &server, WebServer::ConnectionType type,
+		char *url_tail, bool tail_complete) {
 
-  //server.httpSuccess("application/json");
-  server.httpSuccess();
+	URLPARAM_RESULT rc;
+	char name[32];
+	char value[32];
 
-  if (type != WebServer::GET)
-	return;
+	//server.httpSuccess("application/json");
+	server.httpSuccess();
 
-  if (strlen(url_tail))
-  {
-	while (strlen(url_tail))
-	{
-	  rc = server.nextURLparam(&url_tail, name, 32, value, 32);
+	if (type != WebServer::GET)
+		return;
 
-	  String param = String(name);
+	if (strlen(url_tail)) {
+		while (strlen(url_tail)) {
+			rc = server.nextURLparam(&url_tail, name, 32, value, 32);
 
-	  if(param == "pin") {
+			String param = String(name);
 
-	    String t = value;
-	    char tp = t.charAt(0);
-	    String p = t.substring(1,32);
-	    int pin = atoi(p.c_str());
+			if (param == "pin") {
 
-	    if (tp == 'd') {
-		  server.println(digitalRead(pin));
-	    }
-	    else {
-		  server.println(analogRead(pin));
-	    }
+				String t = value;
+				char tp = t.charAt(0);
+				String p = t.substring(1, 32);
+				int pin = atoi(p.c_str());
 
-	  }
+				if (tp == 'd') {
+					Serial.println(digitalRead(pin));
+				} else {
+					Serial.println(analogRead(pin));
+				}
+
+			}
+
+		}
 
 	}
-
-  }
 }
 
-void RestApi::put(WebServer &server, WebServer::ConnectionType type, char *url_tail, bool tail_complete)
-{
-  URLPARAM_RESULT rc;
-  char name[32];
-  char value[32];
+void RestApi::put(WebServer &server, WebServer::ConnectionType type,
+		char *url_tail, bool tail_complete) {
 
-  //server.httpSuccess("application/json");
-  server.httpSuccess();
+	URLPARAM_RESULT rc;
+	char name[32];
+	char value[32];
 
-  if (type != WebServer::PUT)
-	return;
+	//server.httpSuccess("application/json");
+	server.httpSuccess();
 
-  if (strlen(url_tail))
-  {
-	while (strlen(url_tail))
-	{
-	  rc = server.nextURLparam(&url_tail, name, 32, value, 32);
+	if (type != WebServer::PUT)
+		return;
 
-	  String param = String(name);
-	  String vl = value;
+	if (strlen(url_tail)) {
+		while (strlen(url_tail)) {
+			rc = server.nextURLparam(&url_tail, name, 32, value, 32);
 
-	  int v = atoi(vl.c_str());
+			String param = String(name);
+			String vl = value;
 
-	  if( v == HIGH || v == LOW) {
+			int v = atoi(vl.c_str());
 
-	    String t = name;
-	    char tp = t.charAt(0);
-	    String p = t.substring(1,32);
-	    int pin = atoi(p.c_str());
+			if (v >= 0) {
 
-	    if (tp == 'd') {
-		  digitalWrite(pin, v);
-	    }
-	    else {
-		  analogWrite(pin, v);
-	    }
-	  }
+				String t = name;
+				char tp = t.charAt(0);
+				String p = t.substring(1, 32);
+				int pin = atoi(p.c_str());
 
+				if (tp == 'd') {
+					digitalWrite(pin, v);
+				} else {
+					analogWrite(pin, v);
+				}
+			}
+
+		}
 	}
-  }
 }
