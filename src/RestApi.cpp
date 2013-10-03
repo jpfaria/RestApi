@@ -76,10 +76,14 @@ void RestApi::put(WebServer &server, WebServer::ConnectionType type,
 				int pin = atoi(p.c_str());
 
 				if (tp == 'd') {
-					digitalWrite(pin, v);
+                    digitalWrite(pin, v);
 				} else {
-					analogWrite(pin, v);
-				}
+                    analogWrite(pin, v);
+                }
+
+                Serial.print(pin + ":");
+                Serial.println(v);
+
 			}
 
 		}
